@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroArch AI — Intelligent Architecture Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+/* ═══════════════════════════════════════════════════
+   NeuroArch AI — style.css
+   Dark neon theme · Glassmorphism · Futuristic UI
+═══════════════════════════════════════════════════ */
+
+/* ── CSS Custom Properties ─────────────────────── */
+:root {
+  --bg-base:        #050810;
+  --bg-surface:     #080d1a;
+  --bg-glass:       rgba(10, 18, 40, 0.65);
+  --bg-glass-light: rgba(20, 35, 70, 0.45);
+
+  --neon-cyan:   #00e5ff;
+  --neon-blue:   #2979ff;
+  --neon-purple: #b24bff;
+  --neon-green:  #00ff9d;
+
+  --text-primary:   #e8f0ff;
+  --text-secondary: #7a90bf;
+  --text-muted:     #3d5070;
+
+  --border-dim:   rgba(0, 229, 255, 0.12);
+  --border-glow:  rgba(0, 229, 255, 0.45);
+
+  --font-display: 'Syne', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glow-sm:  0 0 12px rgba(0, 229, 255, 0.35);
+  --glow-md:  0 0 28px rgba(0, 229, 255, 0.28), 0 0 60px rgba(41, 121, 255, 0.14);
+  --glow-lg:  0 0 60px rgba(0, 229, 255, 0.20), 0 0 120px rgba(178, 75, 255, 0.12);
+}
+
+/* ── Reset & Base ──────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-mono);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.7;
+  cursor: none; /* custom cursor */
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+img, svg { display: block; max-width: 100%; }
+input, select, textarea, button { font-family: var(--font-mono); }
+
+/* ── Custom Cursor ─────────────────────────────── */
+.cursor-glow {
+  position: fixed;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  transition: 0.08s linear;
+}
+
+/* ── Background Canvas ─────────────────────────── */
+#bgCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* ── Scrollbar ─────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 10px; }
+
+/* ── Typography helpers ────────────────────────── */
+.gradient-text {
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.outline-text {
+  -webkit-text-stroke: 1.5px var(--neon-cyan);
+  color: transparent;
+}
+
+/* ── Scroll reveal ─────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════ */
+.nav-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 0 2rem;
+  transition: background var(--transition), backdrop-filter var(--transition), border-color var(--transition);
+  border-bottom: 1px solid transparent;
+}
+.nav-header.scrolled {
+  background: rgba(5, 8, 16, 0.82);
+  backdrop-filter: blur(18px);
+  border-color: var(--border-dim);
+}
+
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+/* Logo */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.logo-icon {
+  font-size: 1.5rem;
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 6px var(--neon-cyan));
+  animation: logoSpin 10s linear infinite;
+}
+@keyframes logoSpin {
+  to { transform: rotate(360deg); }
+}
+.logo-text em { color: var(--neon-cyan); font-style: normal; }
+
+/* Nav links */
+.nav-links {
+  display: flex;
+  gap: 0.2rem;
+  margin-left: auto;
+}
+.nav-link {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background var(--transition);
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 2px; left: 50%; right: 50%;
+  height: 2px;
+  background: var(--neon-cyan);
+  transition: left var(--transition), right var(--transition);
+  border-radius: 2px;
+  box-shadow: var(--glow-sm);
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--text-primary);
+}
+.nav-link:hover::after, .nav-link.active::after {
+  left: 0.85rem; right: 0.85rem;
+}
+
+/* CTA */
+.nav-cta {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--bg-base);
+  background: var(--neon-cyan);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--glow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+  white-space: nowrap;
+}
+.nav-cta:hover {
+  box-shadow: var(--glow-md);
+  transform: translateY(-1px);
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  margin-left: auto;
+}
+.hamburger span {
+  display: block;
+  width: 24px; height: 2px;
+  background: var(--neon-cyan);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ════════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 120px 10vw 80px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Blueprint grid overlay */
+.blueprint-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridFloat 20s linear infinite;
+}
+@keyframes gridFloat {
+  from { background-position: 0 0; }
+  to   { background-position: 60px 60px; }
+}
+
+/* Scan line */
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.4;
+  animation: scanDown 5s linear infinite;
+  z-index: 2;
+}
+@keyframes scanDown {
+  0%   { top: 0; opacity: 0.6; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Particles */
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  animation: particleFloat linear infinite;
+  opacity: 0;
+}
+@keyframes particleFloat {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 0.8; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+
+/* Hero badge */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-dim);
+  border-radius: 100px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  backdrop-filter: blur(10px);
+  margin-bottom: 1.8rem;
+}
+.badge-dot {
+  width: 7px; height: 7px;
+  background: var(--neon-green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* Hero title */
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5.5vw, 5rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.4rem;
+}
+
+.hero-sub {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin-bottom: 2.2rem;
+  line-height: 1.75;
+}
+
+/* Actions */
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.8rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.8rem;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
+  color: var(--bg-base);
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--glow-md);
+  transition: box-shadow var(--transition), transform var(--transition);
+  cursor: pointer;
+}
+.btn-primary svg { width: 16px; height: 16px; }
+.btn-primary:hover { box-shadow: var(--glow-lg); transform: translateY(-2px); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.8rem 1.8rem;
+  border: 1px solid var(--border-glow);
+  color: var(--neon-cyan);
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition), box-shadow var(--transition);
+  cursor: pointer;
+}
+.btn-ghost:hover {
+  background: rgba(0,229,255,0.07);
+  box-shadow: var(--glow-sm);
+}
+
+/* Stats */
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.stat-pill { display: flex; flex-direction: column; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  line-height: 1;
+}
+.stat-suffix { display: inline; font-size: 1rem; }
+.stat-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border-dim);
+}
+
+/* ── Building Wireframe Visual ─────────────────── */
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.building-wireframe {
+  position: relative;
+  width: 320px;
+  height: 400px;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.bw-floor {
+  position: absolute;
+  left: 20px; right: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  box-shadow: 0 0 8px var(--neon-cyan);
+  animation: floorPulse 3s ease infinite;
+}
+.f1 { bottom: 15%;  animation-delay: 0s; }
+.f2 { bottom: 37%;  animation-delay: 0.4s; }
+.f3 { bottom: 59%;  animation-delay: 0.8s; }
+.f4 { bottom: 81%;  animation-delay: 1.2s; }
+.bw-roof {
+  position: absolute;
+  top: 5%;
+  left: 10px; right: 10px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+  box-shadow: 0 0 12px var(--neon-purple);
+  animation: floorPulse 3s ease infinite 1.5s;
+}
+@keyframes floorPulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+.bw-line {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(180deg, var(--neon-cyan), transparent);
+  box-shadow: 0 0 6px var(--neon-cyan);
+  top: 5%; bottom: 15%;
+}
+.l1 { left: 10px; }
+.l2 { left: 33%; }
+.l3 { right: 33%; }
+.l4 { right: 10px; }
+
+.bw-scan {
+  position: absolute;
+  left: 10px; right: 10px;
+  height: 80px;
+  background: linear-gradient(180deg, transparent, rgba(0,229,255,0.08), transparent);
+  animation: bwScanMove 4s ease-in-out infinite;
+}
+@keyframes bwScanMove {
+  0%   { top: 5%; }
+  100% { top: 70%; }
+}
+
+.bw-label {
+  position: absolute;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--neon-cyan);
+  opacity: 0.7;
+  font-family: var(--font-mono);
+}
+
+.ping-dot {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 0 0 rgba(0,255,157,0.5);
+  animation: pingAnim 2.5s ease infinite;
+  transform: translate(-50%, -50%);
+}
+.ping-dot:nth-child(2) { animation-delay: 0.7s; background: var(--neon-cyan); }
+.ping-dot:nth-child(3) { animation-delay: 1.4s; background: var(--neon-purple); }
+@keyframes pingAnim {
+  0%   { box-shadow: 0 0 0 0 rgba(0,255,157,0.5); }
+  70%  { box-shadow: 0 0 0 14px rgba(0,255,157,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,255,157,0); }
+}
+
+/* ════════════════════════════════════════════════
+   FEATURES
+════════════════════════════════════════════════ */
+.features {
+  position: relative;
+  z-index: 1;
+  padding: 120px 10vw;
+}
+
+.section-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 5rem;
+}
+.section-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.section-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.feat-card {
+  position: relative;
+  padding: 2rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  cursor: default;
+}
+.feat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.feat-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--glow-md);
+  transform: translateY(-4px);
+}
+.feat-card:hover::before { opacity: 1; }
+
+.feat-icon {
+  font-size: 1.8rem;
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 6px var(--neon-cyan));
+  margin-bottom: 1rem;
+}
+
+.feat-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.01em;
+}
+.feat-card p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin-bottom: 1.2rem;
+}
+.feat-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--neon-purple);
+  border: 1px solid rgba(178,75,255,0.3);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* ════════════════════════════════════════════════
+   AI GENERATOR
+════════════════════════════════════════════════ */
+.generator {
+  position: relative;
+  z-index: 1;
+  padding: 120px 10vw;
+  background: linear-gradient(180deg, transparent, rgba(0,229,255,0.02), transparent);
+}
+
+.gen-wrapper {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Shared Panel */
+.gen-input-panel,
+.gen-output-panel {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+.gen-input-panel::after,
+.gen-output-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(ellipse at top left, rgba(0,229,255,0.04), transparent 60%);
+  pointer-events: none;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1.8rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-dim);
+}
+.panel-indicator {
+  width: 8px; height: 8px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-cyan);
+}
+.panel-indicator.pulse { animation: pulse 2s ease infinite; }
+.panel-version {
+  margin-left: auto;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* Input groups */
+.input-group {
+  margin-bottom: 1.4rem;
+}
+.input-group label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+.unit { color: var(--text-muted); text-transform: none; letter-spacing: 0; }
+
+.input-field-wrap {
+  position: relative;
+}
+.input-field-wrap input {
+  width: 100%;
+  background: rgba(0,229,255,0.04);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 2.5rem 0.75rem 0.9rem;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.input-field-wrap input:focus {
+  border-color: var(--border-glow);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
+}
+.input-field-wrap input::placeholder { color: var(--text-muted); }
+.input-icon {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%; transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* Type selector */
+.type-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+.type-btn {
+  padding: 0.6rem 0.3rem;
+  background: rgba(0,229,255,0.04);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.type-btn:hover { border-color: var(--border-glow); color: var(--text-primary); }
+.type-btn.active {
+  background: rgba(0,229,255,0.12);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: var(--glow-sm);
+}
+
+/* Floor slider */
+.floor-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.floor-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: linear-gradient(90deg, var(--neon-cyan) var(--progress, 10%), var(--border-dim) var(--progress, 10%));
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.floor-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--neon-cyan);
+  transition: transform var(--transition);
+}
+.floor-slider::-webkit-slider-thumb:hover { transform: scale(1.3); }
+.floor-display {
+  font-size: 0.8rem;
+  color: var(--neon-cyan);
+  min-width: 64px;
+  text-align: right;
+}
+
+/* Select */
+.styled-select {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  background: rgba(0,229,255,0.04);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a90bf' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  transition: border-color var(--transition);
+}
+.styled-select:focus { border-color: var(--border-glow); }
+.styled-select option { background: #0d1a33; }
+
+/* Generate button */
+.generate-btn {
+  width: 100%;
+  padding: 0.95rem 1.5rem;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--transition), transform var(--transition);
+  box-shadow: 0 0 20px rgba(41,121,255,0.3);
+  margin-top: 0.5rem;
+}
+.generate-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.generate-btn:hover {
+  box-shadow: 0 0 40px rgba(41,121,255,0.5);
+  transform: translateY(-2px);
+}
+.generate-btn:hover::before { opacity: 1; }
+.generate-btn:active { transform: scale(0.98); }
+
+.generate-btn-inner,
+.generate-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.generate-arrow { width: 16px; height: 16px; transition: transform var(--transition); }
+.generate-btn:hover .generate-arrow { transform: translateX(4px); }
+.hidden { display: none !important; }
+
+/* Spinner */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Output Panel ──────────────────────────────── */
+.output-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 1rem;
+  min-height: 300px;
+}
+.empty-icon {
+  font-size: 3rem;
+  color: var(--border-dim);
+  animation: pulse 3s ease infinite;
+}
+.output-empty p { font-size: 0.82rem; line-height: 1.7; }
+.output-empty strong { color: var(--text-secondary); }
+
+/* Empty grid animation */
+.empty-grid-anim {
+  display: grid;
+  grid-template-columns: repeat(3, 12px);
+  grid-template-rows: repeat(3, 12px);
+  gap: 6px;
+  margin-top: 1rem;
+}
+.empty-grid-anim div {
+  background: var(--border-dim);
+  border-radius: 2px;
+  animation: gridPulse 2s ease infinite;
+}
+.empty-grid-anim div:nth-child(1) { animation-delay: 0s; }
+.empty-grid-anim div:nth-child(2) { animation-delay: 0.1s; }
+.empty-grid-anim div:nth-child(3) { animation-delay: 0.2s; }
+.empty-grid-anim div:nth-child(4) { animation-delay: 0.3s; }
+.empty-grid-anim div:nth-child(5) { animation-delay: 0.4s; }
+.empty-grid-anim div:nth-child(6) { animation-delay: 0.5s; }
+.empty-grid-anim div:nth-child(7) { animation-delay: 0.6s; }
+.empty-grid-anim div:nth-child(8) { animation-delay: 0.7s; }
+.empty-grid-anim div:nth-child(9) { animation-delay: 0.8s; }
+@keyframes gridPulse {
+  0%, 100% { background: var(--border-dim); }
+  50% { background: rgba(0,229,255,0.3); }
+}
+
+/* Result metrics */
+.result-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.metric {
+  background: rgba(0,229,255,0.04);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem;
+  text-align: center;
+}
+.metric-label {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+.metric-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+/* Result blocks */
+.result-block {
+  margin-bottom: 1.2rem;
+  background: rgba(0,229,255,0.02);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  animation: slideIn 0.4s ease forwards;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.result-block-title {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  background: rgba(0,229,255,0.06);
+  border-bottom: 1px solid var(--border-dim);
+}
+.result-block-body {
+  padding: 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* Room list */
+.room-list {
+  padding: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+.room-list li {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.room-list li::before {
+  content: '▸';
+  color: var(--neon-cyan);
+  font-size: 0.7rem;
+}
+
+/* ASCII plan */
+.ascii-plan {
+  padding: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--neon-cyan);
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  white-space: pre;
+  overflow-x: auto;
+  opacity: 0.85;
+}
+
+/* Result actions */
+.result-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.res-btn {
+  flex: 1;
+  padding: 0.7rem;
+  background: rgba(0,229,255,0.05);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.res-btn:hover {
+  border-color: var(--border-glow);
+  color: var(--neon-cyan);
+}
+.res-btn.primary {
+  background: linear-gradient(135deg, rgba(0,229,255,0.1), rgba(41,121,255,0.1));
+  border-color: var(--border-glow);
+  color: var(--neon-cyan);
+}
+.res-btn.primary:hover {
+  box-shadow: var(--glow-sm);
+}
+
+/* ════════════════════════════════════════════════
+   CONTACT
+════════════════════════════════════════════════ */
+.contact {
+  position: relative;
+  z-index: 1;
+  padding: 120px 10vw;
+}
+
+.contact-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+.contact-info-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.ci-icon {
+  font-size: 1.3rem;
+  color: var(--neon-cyan);
+  width: 36px;
+  text-align: center;
+  filter: drop-shadow(0 0 5px var(--neon-cyan));
+}
+.contact-info-item strong {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.1rem;
+}
+.contact-info-item span {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.contact-form-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  backdrop-filter: blur(20px);
+}
+.contact-form-card textarea {
+  width: 100%;
+  background: rgba(0,229,255,0.04);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.contact-form-card textarea:focus { border-color: var(--border-glow); }
+.contact-form-card textarea::placeholder { color: var(--text-muted); }
+.contact-form-card .input-field-wrap input { width: 100%; }
+
+/* ════════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════════ */
+.footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border-dim);
+  padding: 60px 10vw 0;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+}
+
+.footer-brand p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-top: 1rem;
+  max-width: 260px;
+}
+
+.footer-links-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.footer-links-group strong {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+}
+.footer-links-group a {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+.footer-links-group a:hover { color: var(--neon-cyan); }
+
+.footer-social {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.footer-social strong {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.social-row { display: flex; gap: 0.6rem; }
+.social-btn {
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,229,255,0.05);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.social-btn:hover {
+  border-color: var(--border-glow);
+  color: var(--neon-cyan);
+  box-shadow: var(--glow-sm);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border-dim);
+  padding: 1.2rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .gen-wrapper { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 120px 6vw 80px;
+  }
+  .hero-visual { display: none; }
+  .contact-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .result-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; flex-direction: column; position: fixed; top: 70px; left: 0; right: 0; bottom: 0; background: rgba(5,8,16,0.97); padding: 2rem; gap: 0.5rem; z-index: 999; backdrop-filter: blur(20px); }
+  .nav-links.open { display: flex; }
+  .nav-cta { display: none; }
+  .hamburger { display: flex; }
+  .features-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+  .room-list { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 2.2rem; }
+  .hero-stats { gap: 1rem; }
+  .type-selector { grid-template-columns: 1fr; }
+  .gen-input-panel, .gen-output-panel { padding: 1.4rem; }
+}
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR GLOW -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- CANVAS BACKGROUND -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- ═══ NAV ═══ -->
+  <header class="nav-header" id="navHeader">
+    <nav class="nav-inner">
+      <a href="#home" class="nav-logo">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">Neuro<em>Arch</em></span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home"      class="nav-link active">Home</a></li>
+        <li><a href="#features"  class="nav-link">Features</a></li>
+        <li><a href="#generator" class="nav-link">AI Generator</a></li>
+        <li><a href="#contact"   class="nav-link">Contact</a></li>
+      </ul>
+      <a href="#generator" class="nav-cta">Launch AI</a>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="home">
+    <div class="blueprint-grid"></div>
+    <div class="particles" id="particles"></div>
+    <div class="scan-line"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge reveal">
+        <span class="badge-dot"></span>
+        Neural Architecture Engine · v4.2.1
+      </div>
+
+      <h1 class="hero-title reveal">
+        Design Smarter<br />
+        <span class="gradient-text">Build Faster</span><br />
+        <span class="outline-text">Think Deeper</span>
+      </h1>
+
+      <p class="hero-sub reveal">
+        NeuroArch AI transforms raw plot data into intelligent architectural blueprints.
+        Input your parameters — let the neural engine do the rest.
+      </p>
+
+      <div class="hero-actions reveal">
+        <a href="#generator" class="btn-primary">
+          <span>Start Generating</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <a href="#features" class="btn-ghost">Explore Features</a>
+      </div>
+
+      <div class="hero-stats reveal">
+        <div class="stat-pill">
+          <span class="stat-num" data-target="12400">0</span>
+          <span class="stat-label">Blueprints Generated</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-pill">
+          <span class="stat-num" data-target="98">0</span><span class="stat-suffix">%</span>
+          <span class="stat-label">Accuracy Score</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-pill">
+          <span class="stat-num" data-target="340">0</span><span class="stat-suffix">ms</span>
+          <span class="stat-label">Avg. Response</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wireframe Building Visual -->
+    <div class="hero-visual reveal">
+      <div class="building-wireframe">
+        <div class="bw-floor f1"></div>
+        <div class="bw-floor f2"></div>
+        <div class="bw-floor f3"></div>
+        <div class="bw-floor f4"></div>
+        <div class="bw-roof"></div>
+        <div class="bw-line l1"></div>
+        <div class="bw-line l2"></div>
+        <div class="bw-line l3"></div>
+        <div class="bw-line l4"></div>
+        <div class="bw-scan"></div>
+        <div class="bw-label" style="top:10%;left:5%">z+4</div>
+        <div class="bw-label" style="top:40%;right:5%">z+2</div>
+        <div class="bw-label" style="bottom:12%;left:10%">z±0</div>
+        <div class="ping-dot" style="top:20%;left:50%"></div>
+        <div class="ping-dot" style="top:55%;left:25%"></div>
+        <div class="ping-dot" style="top:70%;right:20%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section class="features" id="features">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Core Capabilities</p>
+      <h2 class="section-title">Neural-Powered <span class="gradient-text">Architecture</span></h2>
+      <p class="section-desc">Six intelligent modules working in harmony to produce precision blueprints at machine speed.</p>
+    </div>
+
+    <div class="features-grid">
+      <article class="feat-card reveal" data-delay="0">
+        <div class="feat-icon">◈</div>
+        <h3>Plot Intelligence</h3>
+        <p>Analyzes terrain topology, orientation, and zoning regulations to unlock the optimal footprint for any parcel of land.</p>
+        <div class="feat-tag">SPATIAL AI</div>
+      </article>
+
+      <article class="feat-card reveal" data-delay="100">
+        <div class="feat-icon">⬡</div>
+        <h3>Room Synthesis</h3>
+        <p>Generates balanced room hierarchies — bedroom, utility, circulation — tuned to occupancy patterns and natural light vectors.</p>
+        <div class="feat-tag">FLOOR LOGIC</div>
+      </article>
+
+      <article class="feat-card reveal" data-delay="200">
+        <div class="feat-icon">⬢</div>
+        <h3>Structural Insight</h3>
+        <p>Recommends load-bearing strategies, column grids, and foundation types derived from area ratios and building classification.</p>
+        <div class="feat-tag">ENGINEERING</div>
+      </article>
+
+      <article class="feat-card reveal" data-delay="300">
+        <div class="feat-icon">▣</div>
+        <h3>Energy Modelling</h3>
+        <p>Simulates solar exposure, thermal mass, and HVAC zoning to produce climate-responsive design guidance automatically.</p>
+        <div class="feat-tag">ECO SYSTEMS</div>
+      </article>
+
+      <article class="feat-card reveal" data-delay="400">
+        <div class="feat-icon">◉</div>
+        <h3>Cost Estimation</h3>
+        <p>Cross-references regional material costs and labor indices to produce accurate budget envelopes alongside every design.</p>
+        <div class="feat-tag">FINANCIALS</div>
+      </article>
+
+      <article class="feat-card reveal" data-delay="500">
+        <div class="feat-icon">⊕</div>
+        <h3>Export & Iterate</h3>
+        <p>One-click export to DXF, PDF, or IFC. Revision cycles close in minutes, not weeks, with version-diffing built in.</p>
+        <div class="feat-tag">WORKFLOW</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ AI GENERATOR ═══ -->
+  <section class="generator" id="generator">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">Neural Engine</p>
+      <h2 class="section-title">AI <span class="gradient-text">Blueprint Generator</span></h2>
+      <p class="section-desc">Feed the neural engine your parameters and receive a detailed architectural brief in milliseconds.</p>
+    </div>
+
+    <div class="gen-wrapper">
+
+      <!-- INPUT PANEL -->
+      <div class="gen-input-panel reveal">
+        <div class="panel-header">
+          <span class="panel-indicator"></span>
+          INPUT PARAMETERS
+          <span class="panel-version">NE-4.2</span>
+        </div>
+
+        <div class="input-group">
+          <label for="plotWidth">Plot Width <span class="unit">(meters)</span></label>
+          <div class="input-field-wrap">
+            <input type="number" id="plotWidth" placeholder="e.g. 12" min="1" max="500" />
+            <span class="input-icon">↔</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="plotHeight">Plot Depth <span class="unit">(meters)</span></label>
+          <div class="input-field-wrap">
+            <input type="number" id="plotHeight" placeholder="e.g. 18" min="1" max="500" />
+            <span class="input-icon">↕</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Building Type</label>
+          <div class="type-selector" id="typeSelector">
+            <button class="type-btn active" data-type="house">🏠 House</button>
+            <button class="type-btn" data-type="office">🏢 Office</button>
+            <button class="type-btn" data-type="commercial">🏪 Commercial</button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Floors</label>
+          <div class="floor-slider-wrap">
+            <input type="range" id="floorCount" min="1" max="10" value="2" class="floor-slider" />
+            <span class="floor-display" id="floorDisplay">2 Floors</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Style Preference</label>
+          <select id="styleSelect" class="styled-select">
+            <option value="modern">Modern Minimalist</option>
+            <option value="industrial">Industrial Loft</option>
+            <option value="biophilic">Biophilic Design</option>
+            <option value="brutalist">Neo-Brutalist</option>
+            <option value="smart">Smart / Tech-Forward</option>
+          </select>
+        </div>
+
+        <button class="generate-btn" id="generateBtn">
+          <span class="generate-btn-inner">
+            <span class="generate-btn-text">Generate Blueprint</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="generate-arrow">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </span>
+          <span class="generate-btn-loading hidden">
+            <span class="spinner"></span> Thinking…
+          </span>
+        </button>
+      </div>
+
+      <!-- OUTPUT PANEL -->
+      <div class="gen-output-panel reveal" id="outputPanel">
+        <div class="panel-header">
+          <span class="panel-indicator pulse"></span>
+          AI OUTPUT
+          <span class="panel-version" id="outputTimestamp">—</span>
+        </div>
+
+        <!-- Empty state -->
+        <div class="output-empty" id="outputEmpty">
+          <div class="empty-icon">⬡</div>
+          <p>Configure parameters and hit <strong>Generate Blueprint</strong><br/>to activate the neural engine.</p>
+          <div class="empty-grid-anim">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+        </div>
+
+        <!-- Result state -->
+        <div class="output-result hidden" id="outputResult">
+          <div class="result-metrics">
+            <div class="metric">
+              <span class="metric-label">Total Area</span>
+              <span class="metric-value" id="rArea">—</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Built-up Area</span>
+              <span class="metric-value" id="rBuiltUp">—</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Floors</span>
+              <span class="metric-value" id="rFloors">—</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Efficiency</span>
+              <span class="metric-value" id="rEfficiency">—</span>
+            </div>
+          </div>
+
+          <div class="result-block" id="rLayoutBlock">
+            <div class="result-block-title">RECOMMENDED LAYOUT</div>
+            <div class="result-block-body" id="rLayout"></div>
+          </div>
+
+          <div class="result-block" id="rRoomsBlock">
+            <div class="result-block-title">ROOM PROGRAMME</div>
+            <ul class="room-list" id="rRooms"></ul>
+          </div>
+
+          <div class="result-block">
+            <div class="result-block-title">DESIGN BRIEF</div>
+            <div class="result-block-body" id="rDesignBrief"></div>
+          </div>
+
+          <div class="result-block">
+            <div class="result-block-title">STRUCTURAL NOTE</div>
+            <div class="result-block-body" id="rStructural"></div>
+          </div>
+
+          <div class="result-block">
+            <div class="result-block-title">SCHEMATIC PREVIEW</div>
+            <pre class="ascii-plan" id="rAscii"></pre>
+          </div>
+
+          <div class="result-actions">
+            <button class="res-btn" id="resetBtn">↺ Reset</button>
+            <button class="res-btn primary" onclick="window.print()">⬇ Export</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ═══ -->
+  <section class="contact" id="contact">
+    <div class="contact-inner reveal">
+
+      <div class="contact-left">
+        <p class="section-eyebrow">Get In Touch</p>
+        <h2 class="section-title">Let's Build the <span class="gradient-text">Future Together</span></h2>
+        <p class="section-desc">Reach out for enterprise partnerships, API access, or custom neural architecture solutions.</p>
+
+        <div class="contact-info-list">
+          <div class="contact-info-item">
+            <span class="ci-icon">◈</span>
+            <div>
+              <strong>Email</strong>
+              <span>hello@neuroarch.ai</span>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="ci-icon">⬡</span>
+            <div>
+              <strong>Headquarters</strong>
+              <span>Neo-Tokyo, Digital District</span>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="ci-icon">◉</span>
+            <div>
+              <strong>Response Time</strong>
+              <span>&lt; 2 Business Hours</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-right">
+        <div class="contact-form-card">
+          <div class="input-group">
+            <label>Name</label>
+            <div class="input-field-wrap">
+              <input type="text" placeholder="Your full name" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Email</label>
+            <div class="input-field-wrap">
+              <input type="email" placeholder="you@example.com" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Message</label>
+            <textarea placeholder="Describe your project or inquiry…" rows="5"></textarea>
+          </div>
+          <button class="generate-btn" style="margin-top:0.5rem">
+            <span class="generate-btn-inner">
+              <span class="generate-btn-text">Send Message</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="generate-arrow">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <a href="#home" class="nav-logo">
+          <span class="logo-icon">⬡</span>
+          <span class="logo-text">Neuro<em>Arch</em></span>
+        </a>
+        <p>Intelligent architecture for a machine-speed world. Neural blueprints. Human vision.</p>
+      </div>
+
+      <div class="footer-links-group">
+        <strong>Platform</strong>
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#generator">AI Generator</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <div class="footer-links-group">
+        <strong>Resources</strong>
+        <a href="#">Documentation</a>
+        <a href="#">API Reference</a>
+        <a href="#">Case Studies</a>
+        <a href="#">Changelog</a>
+      </div>
+
+      <div class="footer-social">
+        <strong>Connect</strong>
+        <div class="social-row">
+          <a href="#" class="social-btn" aria-label="Twitter/X">𝕏</a>
+          <a href="#" class="social-btn" aria-label="GitHub">⊕</a>
+          <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
+          <a href="#" class="social-btn" aria-label="Discord">▣</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2025 NeuroArch AI. All neural pathways reserved.</span>
+      <span>Privacy · Terms · Cookies</span>
+    </div>
+  </footer>
+
+  <script>
+/* ═══════════════════════════════════════════════════
+   NeuroArch AI — script.js
+   All interactive behaviours, AI logic, animations
+═══════════════════════════════════════════════════ */
+
+'use strict';
+
+/* ════════════════════════════════════════════════
+   1. CURSOR GLOW
+════════════════════════════════════════════════ */
+const cursorGlow = document.getElementById('cursorGlow');
+
+document.addEventListener('mousemove', (e) => {
+  cursorGlow.style.left = e.clientX + 'px';
+  cursorGlow.style.top  = e.clientY + 'px';
+});
+
+
+/* ════════════════════════════════════════════════
+   2. ANIMATED BACKGROUND CANVAS (particle grid)
+════════════════════════════════════════════════ */
+(function initCanvas() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx    = canvas.getContext('2d');
+
+  // Nodes for a neural network feel
+  const nodes  = [];
+  const NODE_COUNT = 55;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Initialise nodes
+  for (let i = 0; i < NODE_COUNT; i++) {
+    nodes.push({
+      x:  Math.random() * canvas.width,
+      y:  Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      r:  Math.random() * 2 + 1,
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Update positions
+    nodes.forEach(n => {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
+      if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+    });
+
+    // Draw edges between close nodes
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx   = nodes[i].x - nodes[j].x;
+        const dy   = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 160) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0,229,255,${0.12 * (1 - dist / 160)})`;
+          ctx.lineWidth   = 0.6;
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,229,255,0.55)';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+
+
+/* ════════════════════════════════════════════════
+   3. FLOATING PARTICLES (hero section)
+════════════════════════════════════════════════ */
+(function spawnParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+
+  const count = 28;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left:             ${Math.random() * 100}%;
+      width:            ${Math.random() * 3 + 1}px;
+      height:           ${Math.random() * 3 + 1}px;
+      animation-duration: ${Math.random() * 12 + 8}s;
+      animation-delay:    ${Math.random() * 10}s;
+      opacity:          ${Math.random() * 0.6 + 0.2};
+    `;
+    container.appendChild(p);
+  }
+})();
+
+
+/* ════════════════════════════════════════════════
+   4. NAVBAR SCROLL BEHAVIOUR & ACTIVE LINK
+════════════════════════════════════════════════ */
+(function initNav() {
+  const header    = document.getElementById('navHeader');
+  const links     = document.querySelectorAll('.nav-link');
+  const sections  = document.querySelectorAll('section[id]');
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.getElementById('navLinks');
+
+  // Scrolled class
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 40);
+
+    // Active section highlight
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+    });
+    links.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  }, { passive: true });
+
+  // Mobile hamburger
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+
+  // Close menu on link click
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navLinks.classList.remove('open');
+    });
+  });
+})();
+
+
+/* ════════════════════════════════════════════════
+   5. SCROLL REVEAL ANIMATION
+════════════════════════════════════════════════ */
+(function initReveal() {
+  const elements = document.querySelectorAll('.reveal');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+
+      const delay = parseInt(entry.target.dataset.delay || 0, 10);
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, delay);
+
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.12 });
+
+  elements.forEach(el => observer.observe(el));
+})();
+
+
+/* ════════════════════════════════════════════════
+   6. HERO STAT COUNTER ANIMATION
+════════════════════════════════════════════════ */
+(function initCounters() {
+  const counters = document.querySelectorAll('.stat-num[data-target]');
+
+  const animateCounter = (el) => {
+    const target   = parseInt(el.dataset.target, 10);
+    const duration = 1800; // ms
+    const step     = Math.ceil(duration / 60);
+    let current    = 0;
+    const increment = target / (duration / 16.67);
+
+    const tick = () => {
+      current += increment;
+      if (current >= target) {
+        el.textContent = target.toLocaleString();
+      } else {
+        el.textContent = Math.floor(current).toLocaleString();
+        requestAnimationFrame(tick);
+      }
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(c => observer.observe(c));
+})();
+
+
+/* ════════════════════════════════════════════════
+   7. GENERATOR — INPUTS & INTERACTIVITY
+════════════════════════════════════════════════ */
+
+// Building type selector
+const typeBtns   = document.querySelectorAll('.type-btn');
+let   activeType = 'house';
+
+typeBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    typeBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeType = btn.dataset.type;
+
+    // Ripple effect
+    const ripple = document.createElement('span');
+    ripple.style.cssText = `
+      position:absolute; border-radius:50%;
+      transform:scale(0); animation:ripple 0.5s linear;
+      background:rgba(0,229,255,0.25);
+      width:80px; height:80px;
+      left:${btn.offsetWidth/2 - 40}px; top:${btn.offsetHeight/2 - 40}px;
+    `;
+    btn.style.position = 'relative';
+    btn.style.overflow = 'hidden';
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 500);
+  });
+});
+
+// Add ripple keyframes dynamically
+const rippleStyle = document.createElement('style');
+rippleStyle.textContent = `@keyframes ripple { to { transform:scale(3); opacity:0; } }`;
+document.head.appendChild(rippleStyle);
+
+// Floor slider
+const floorSlider  = document.getElementById('floorCount');
+const floorDisplay = document.getElementById('floorDisplay');
+
+function updateSliderTrack(slider) {
+  const pct = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+  slider.style.setProperty('--progress', pct + '%');
+}
+
+floorSlider.addEventListener('input', () => {
+  const v = floorSlider.value;
+  floorDisplay.textContent = `${v} Floor${v > 1 ? 's' : ''}`;
+  updateSliderTrack(floorSlider);
+});
+updateSliderTrack(floorSlider);
+
+
+/* ════════════════════════════════════════════════
+   8. AI SUGGESTION ENGINE (core logic)
+════════════════════════════════════════════════ */
+
+/**
+ * Analyses the given inputs and returns a rich architectural brief.
+ * @param {number} width  - Plot width in metres
+ * @param {number} height - Plot depth in metres
+ * @param {string} type   - 'house' | 'office' | 'commercial'
+ * @param {number} floors - Number of floors
+ * @param {string} style  - Design style key
+ * @returns {object}      - Complete design data object
+ */
+function generateAIBlueprint(width, height, type, floors, style) {
+  const plotArea   = width * height;
+  const covRatio   = type === 'commercial' ? 0.75 : type === 'office' ? 0.70 : 0.60;
+  const builtUp    = Math.round(plotArea * covRatio * floors);
+  const efficiency = Math.round(covRatio * 100);
+
+  /* ── Room programme by type & area ───────────── */
+  const rooms = getRoomProgramme(type, plotArea, floors);
+
+  /* ── Layout description ───────────────────────── */
+  const layout = getLayoutDesc(type, width, height, floors, style);
+
+  /* ── Design brief ─────────────────────────────── */
+  const brief = getDesignBrief(type, style, plotArea, floors);
+
+  /* ── Structural note ──────────────────────────── */
+  const structural = getStructuralNote(type, plotArea, floors, width, height);
+
+  /* ── ASCII schematic ──────────────────────────── */
+  const ascii = generateASCII(type, Math.round(width), Math.round(height), floors);
+
+  return {
+    plotArea,
+    builtUp,
+    floors,
+    efficiency,
+    rooms,
+    layout,
+    brief,
+    structural,
+    ascii,
+  };
+}
+
+
+/* ── Room Programme ──────────────────────────── */
+function getRoomProgramme(type, area, floors) {
+  if (type === 'house') {
+    const bedrooms = area < 80 ? 2 : area < 160 ? 3 : area < 280 ? 4 : 5;
+    const list = [`${bedrooms}× Bedroom`, '1× Master Suite w/ Ensuite'];
+    if (floors > 1) list.push(`${floors - 1}× Family Bath`);
+    list.push('Open-plan Kitchen + Dining', 'Living / Lounge Area');
+    if (area > 100) list.push('Home Office / Study');
+    if (area > 180) list.push('Guest Room', 'Media Room');
+    list.push('Utility / Laundry', 'Entry Foyer', 'Store Room');
+    if (area > 250) list.push('Gym / Flex Space');
+    return list;
+  }
+
+  if (type === 'office') {
+    const desks  = Math.round(area * floors * 0.35 / 5);
+    const meetRm = area < 150 ? 1 : area < 300 ? 2 : 4;
+    return [
+      `${desks}× Workstation Desk`,
+      `${meetRm}× Conference Room`,
+      'Reception & Waiting Lounge',
+      'Executive Suite',
+      'Server / IT Room',
+      'Pantry & Break Room',
+      'Male & Female WC Block',
+      'Copy / Print Zone',
+      'Archive Storage',
+      floors > 3 ? 'Training / Presentation Room' : 'Flexible Focus Pods',
+    ];
+  }
+
+  // commercial
+  const units = area < 120 ? 1 : area < 300 ? 2 : Math.round(area / 150);
+  return [
+    `${units}× Retail / Showroom Unit`,
+    'Double-Height Entry Atrium',
+    'Customer Service Counter',
+    'Back-of-House Storage',
+    'Loading Bay & Freight Lift',
+    'Staff Amenities Block',
+    'Security & CCTV Room',
+    floors > 2 ? 'Upper-Level F&B / Food Court' : 'Café / Kiosk Zone',
+    'Accessible Restrooms',
+    'Car Park (podium level)',
+  ];
+}
+
+
+/* ── Layout Description ──────────────────────── */
+function getLayoutDesc(type, w, h, floors, style) {
+  const ratio = (w / h).toFixed(2);
+  let orientation = w > h ? 'landscape' : 'portrait';
+
+  const base = {
+    house: `A ${floors}-storey residential layout on a ${orientation}-oriented plot (${w}m × ${h}m, ratio ${ratio}). ` +
+      `The ground floor dedicates its north-facing frontage to the living and kitchen zones, maximising morning light. ` +
+      `Bedrooms stack to the upper ${floors > 1 ? 'floors' : 'rear'} with cross-ventilation corridors. ` +
+      `A central stairwell anchors circulation, while 40% of the rear plot is reserved for outdoor amenity.`,
+
+    office: `A ${floors}-storey corporate campus layout. Floor plates are optimised for an open-plan core with enclosed meeting rooms along the ` +
+      `perimeter. The ${orientation} plot (${w}m × ${h}m) allows dual elevator shafts with 3m clear floor-to-floor heights. ` +
+      `Ground floor accommodates reception, security, and a café. Upper floors house departmental clusters with collaborative hubs at each corner.`,
+
+    commercial: `A ${floors}-floor mixed retail complex on a ${orientation} block (${w}m × ${h}m). ` +
+      `An atrium cut through the centre provides natural light to all levels. Retail anchors occupy the ground plane, ` +
+      `with F&B and services on upper floors. Service cores are pushed to the rear to free 85% of the floor plate for leasable area.`,
+  };
+
+  const styleNote = {
+    modern:     ' Clean rectilinear geometry with flush façades and floor-to-ceiling glazing.',
+    industrial: ' Exposed concrete columns, steel cross-bracing, and raw material palettes throughout.',
+    biophilic:  ' Green walls, planted terraces, and double-height voids filled with specimen trees.',
+    brutalist:  ' Monolithic board-formed concrete panels with dramatic cantilevers over the street.',
+    smart:      ' Embedded IoT sensors, smart glass façades, and integrated BMS throughout every floor.',
+  };
+
+  return (base[type] || base.house) + (styleNote[style] || '');
+}
+
+
+/* ── Design Brief ────────────────────────────── */
+function getDesignBrief(type, style, area, floors) {
+  const styleMap = {
+    modern:     'Modern Minimalist',
+    industrial: 'Industrial Loft',
+    biophilic:  'Biophilic Design',
+    brutalist:  'Neo-Brutalist',
+    smart:      'Smart / Tech-Forward',
+  };
+
+  const briefs = {
+    house: `The residence adopts a "${styleMap[style]}" language across all ${floors} level(s). ` +
+      `With a gross area of approximately ${area} m², the scheme prioritises spatial openness on the ground floor ` +
+      `while providing acoustic separation between private and social realms. ` +
+      `Natural materials—timber, stone, and glass—are layered to create warmth within a rigorous geometric envelope. ` +
+      `Passive cooling strategies reduce mechanical load by an estimated 35%.`,
+
+    office: `The corporate interior adopts "${styleMap[style]}" sensibilities to reinforce brand identity across ${floors} floors. ` +
+      `Activity-based working principles guide the desk-to-collaboration ratio at 60/40. ` +
+      `Biophilic elements—moss walls, indoor gardens, and daylight wells—reduce employee stress metrics by a projected 28%. ` +
+      `All MEP is concealed within a 400mm raised-access floor to allow rapid reconfiguration.`,
+
+    commercial: `The "${styleMap[style]}" retail envelope maximises footfall-to-revenue conversion through strategic sight-line planning. ` +
+      `Anchor tenants are placed at opposing ends of each floor to drive full perimeter circulation. ` +
+      `Façade lighting and a programmable LED canopy create a landmark presence after dark. ` +
+      `BREEAM Excellent sustainability rating is targeted through a photovoltaic roof array and greywater recycling.`,
+  };
+
+  return briefs[type] || briefs.house;
+}
+
+
+/* ── Structural Note ─────────────────────────── */
+function getStructuralNote(type, area, floors, w, h) {
+  const loadKN  = type === 'commercial' ? 7.5 : type === 'office' ? 5.0 : 3.0;
+  const colGrid = w > 10 ? '8m × 8m' : '5m × 5m';
+
+  if (floors <= 2 && area < 200) {
+    return `Loadbearing masonry cavity-wall construction with pre-cast concrete plank floors is recommended for this scale. ` +
+      `Isolated pad footings at 1.5m depth assuming medium clay. Imposed load: ${loadKN} kN/m². ` +
+      `No transfer structure required. Roof uses engineered timber trusses at 600mm centres.`;
+  }
+
+  return `Reinforced concrete moment frame on a ${colGrid} grid with post-tensioned flat-plate slabs. ` +
+    `Pile-cap raft foundation to 4m depth recommended pending geotechnical survey. ` +
+    `Imposed floor load: ${loadKN} kN/m². Lateral stability provided by RC shear walls at stair/lift cores. ` +
+    `${floors > 5 ? 'Transfer beam at Level 2 to span retail atrium below. ' : ''}` +
+    `Steel outrigger trusses at every 3rd floor to limit inter-storey drift to H/400.`;
+}
+
+
+/* ── ASCII Schematic ─────────────────────────── */
+function generateASCII(type, w, h, floors) {
+  // Normalise to printable character grid
+  const cols = Math.min(Math.max(Math.round(w / 3), 8), 32);
+  const rows = Math.min(Math.max(Math.round(h / 4), 5), 18);
+
+  const line = (char, width) => char.repeat(width);
+
+  const hLine  = '+' + line('-', cols) + '+';
+  const hollow = '|' + line(' ', cols) + '|';
+
+  let plan = [`  FLOOR 1 (${w}m × ${h}m)`, hLine];
+
+  if (type === 'house') {
+    // Room dividers for house
+    const mid = Math.floor(cols / 2);
+    plan.push('|' + ' LIVING'.padEnd(mid) + '|' + ' KITCHEN'.padEnd(cols - mid - 1) + '|');
+    plan.push('|' + line('─', mid) + '+' + line('─', cols - mid - 1) + '|');
+    for (let r = 0; r < Math.floor(rows / 3); r++) plan.push(hollow);
+    plan.push('|' + line('─', cols) + '|');
+    plan.push('|' + ' BED 1'.padEnd(mid) + '|' + ' BED 2'.padEnd(cols - mid - 1) + '|');
+    for (let r = 0; r < Math.floor(rows / 4); r++) plan.push(hollow);
+  } else if (type === 'office') {
+    const third = Math.floor(cols / 3);
+    plan.push('|' + ' OPEN OFFICE'.padEnd(cols) + '|');
+    plan.push('|' + line('·', cols) + '|');
+    plan.push('|' + line('·', cols) + '|');
+    plan.push('|' + line('─', cols) + '|');
+    plan.push('|' + ' MEET.'.padEnd(third) + '|' + ' EXEC'.padEnd(third) + '|' + ' WC   |');
+    for (let r = 0; r < Math.floor(rows / 5); r++) plan.push(hollow);
+  } else {
+    // commercial
+    plan.push('|' + ' RETAIL UNIT A'.padEnd(Math.floor(cols * 0.55)) + '|' + ' UNIT B'.padEnd(cols - Math.floor(cols * 0.55) - 1) + '|');
+    for (let r = 0; r < Math.floor(rows / 3); r++) plan.push(hollow);
+    plan.push('|' + line('═', cols) + '|');
+    plan.push('|' + '   [  ATRIUM  ]'.padEnd(cols) + '|');
+    plan.push('|' + line('═', cols) + '|');
+    plan.push('|' + ' STORAGE'.padEnd(Math.floor(cols / 2)) + '|' + ' SERVICES'.padEnd(cols - Math.floor(cols / 2) - 1) + '|');
+    for (let r = 0; r < Math.floor(rows / 6); r++) plan.push(hollow);
+  }
+
+  plan.push(hLine);
+
+  if (floors > 1) {
+    plan.push('');
+    plan.push(`  UPPER FLOORS ×${floors - 1} — TYPICAL PLATE`);
+    plan.push(hLine);
+    plan.push(hollow);
+    plan.push('|' + ' REPEAT PROGRAMME w/ VARIATION'.padEnd(cols) + '|');
+    plan.push(hollow);
+    plan.push(hLine);
+  }
+
+  return plan.join('\n');
+}
+
+
+/* ════════════════════════════════════════════════
+   9. GENERATE BUTTON HANDLER
+════════════════════════════════════════════════ */
+(function initGenerator() {
+  const btn           = document.getElementById('generateBtn');
+  const btnText       = btn.querySelector('.generate-btn-text');
+  const btnArrow      = btn.querySelector('.generate-arrow');
+  const btnInner      = btn.querySelector('.generate-btn-inner');
+  const btnLoading    = btn.querySelector('.generate-btn-loading');
+
+  const outputEmpty   = document.getElementById('outputEmpty');
+  const outputResult  = document.getElementById('outputResult');
+  const outputTs      = document.getElementById('outputTimestamp');
+
+  // Result fields
+  const rArea         = document.getElementById('rArea');
+  const rBuiltUp      = document.getElementById('rBuiltUp');
+  const rFloors       = document.getElementById('rFloors');
+  const rEfficiency   = document.getElementById('rEfficiency');
+  const rLayout       = document.getElementById('rLayout');
+  const rRooms        = document.getElementById('rRooms');
+  const rDesignBrief  = document.getElementById('rDesignBrief');
+  const rStructural   = document.getElementById('rStructural');
+  const rAscii        = document.getElementById('rAscii');
+
+  // Reset button
+  document.getElementById('resetBtn').addEventListener('click', resetOutput);
+
+  function resetOutput() {
+    outputResult.classList.add('hidden');
+    outputEmpty.classList.remove('hidden');
+    outputTs.textContent = '—';
+
+    document.getElementById('plotWidth').value  = '';
+    document.getElementById('plotHeight').value = '';
+    floorSlider.value = 2;
+    floorDisplay.textContent = '2 Floors';
+    updateSliderTrack(floorSlider);
+    typeBtns.forEach(b => b.classList.toggle('active', b.dataset.type === 'house'));
+    activeType = 'house';
+    document.getElementById('styleSelect').selectedIndex = 0;
+  }
+
+  btn.addEventListener('click', () => {
+    const width  = parseFloat(document.getElementById('plotWidth').value);
+    const height = parseFloat(document.getElementById('plotHeight').value);
+    const floors = parseInt(floorSlider.value, 10);
+    const style  = document.getElementById('styleSelect').value;
+
+    /* ── Validation ─────────────────────────────── */
+    if (!width || !height || width <= 0 || height <= 0) {
+      shakeInput();
+      return;
+    }
+    if (width > 500 || height > 500) {
+      alert('Plot dimensions must be ≤ 500 m each.');
+      return;
+    }
+
+    /* ── Show loading state ─────────────────────── */
+    btnInner.classList.add('hidden');
+    btnLoading.classList.remove('hidden');
+    btn.disabled = true;
+
+    /* ── Simulate AI processing delay ──────────── */
+    const processingTime = 1200 + Math.random() * 800;
+
+    setTimeout(() => {
+      /* ── Run the AI engine ──────────────────── */
+      const data = generateAIBlueprint(width, height, activeType, floors, style);
+
+      /* ── Populate result fields ─────────────── */
+      rArea.textContent       = data.plotArea.toLocaleString() + ' m²';
+      rBuiltUp.textContent    = data.builtUp.toLocaleString() + ' m²';
+      rFloors.textContent     = data.floors + (data.floors > 1 ? ' Floors' : ' Floor');
+      rEfficiency.textContent = data.efficiency + '%';
+      rLayout.textContent     = data.layout;
+      rDesignBrief.textContent  = data.brief;
+      rStructural.textContent   = data.structural;
+      rAscii.textContent        = data.ascii;
+
+      // Rooms
+      rRooms.innerHTML = '';
+      data.rooms.forEach(room => {
+        const li = document.createElement('li');
+        li.textContent = room;
+        rRooms.appendChild(li);
+      });
+
+      // Timestamp
+      outputTs.textContent = new Date().toLocaleTimeString();
+
+      /* ── Swap panels ────────────────────────── */
+      outputEmpty.classList.add('hidden');
+      outputResult.classList.remove('hidden');
+
+      // Scroll to result on mobile
+      if (window.innerWidth < 900) {
+        document.getElementById('outputPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      /* ── Restore button ─────────────────────── */
+      btnInner.classList.remove('hidden');
+      btnLoading.classList.add('hidden');
+      btn.disabled = false;
+
+    }, processingTime);
+  });
+
+  /* ── Shake invalid inputs ──────────────────── */
+  function shakeInput() {
+    ['plotWidth', 'plotHeight'].forEach(id => {
+      const el = document.getElementById(id);
+      const empty = !el.value || parseFloat(el.value) <= 0;
+      if (empty) {
+        el.style.borderColor = '#ff4d6d';
+        el.style.boxShadow   = '0 0 0 3px rgba(255,77,109,0.15)';
+        el.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-6px)' },
+          { transform: 'translateX(6px)' },
+          { transform: 'translateX(-4px)' },
+          { transform: 'translateX(4px)' },
+          { transform: 'translateX(0)' },
+        ], { duration: 400, easing: 'ease-out' });
+
+        setTimeout(() => {
+          el.style.borderColor = '';
+          el.style.boxShadow   = '';
+        }, 1500);
+      }
+    });
+  }
+})();
+
+
+/* ════════════════════════════════════════════════
+   10. CONTACT FORM — feedback toast
+════════════════════════════════════════════════ */
+(function initContact() {
+  const contactBtn = document.querySelector('.contact .generate-btn');
+  if (!contactBtn) return;
+
+  contactBtn.addEventListener('click', () => {
+    const name  = document.querySelector('.contact input[type="text"]').value.trim();
+    const email = document.querySelector('.contact input[type="email"]').value.trim();
+
+    if (!name || !email) {
+      contactBtn.animate([
+        { transform: 'translateX(0)' },
+        { transform: 'translateX(-5px)' },
+        { transform: 'translateX(5px)' },
+        { transform: 'translateX(0)' },
+      ], { duration: 300 });
+      return;
+    }
+
+    showToast(`Message sent! We'll reply to ${email} within 2 hrs.`);
+    document.querySelector('.contact input[type="text"]').value  = '';
+    document.querySelector('.contact input[type="email"]').value = '';
+    document.querySelector('.contact textarea').value = '';
+  });
+})();
+
+
+/* ════════════════════════════════════════════════
+   11. TOAST NOTIFICATION
+════════════════════════════════════════════════ */
+function showToast(message) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: rgba(10,18,40,0.95);
+    border: 1px solid rgba(0,229,255,0.45);
+    color: #e8f0ff;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 28px rgba(0,229,255,0.18);
+    z-index: 9998;
+    animation: toastIn 0.4s ease forwards;
+    max-width: 340px;
+  `;
+
+  const ks = document.createElement('style');
+  ks.textContent = `
+    @keyframes toastIn  { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(10px); } }
+  `;
+  document.head.appendChild(ks);
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.4s ease forwards';
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
+
+/* ════════════════════════════════════════════════
+   12. SMOOTH HOVER GLOW on feature cards
+════════════════════════════════════════════════ */
+document.querySelectorAll('.feat-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x    = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1);
+    const y    = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1);
+    card.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(0,229,255,0.07), rgba(10,18,40,0.65) 60%)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.background = '';
+  });
+});
+
+
+/* ════════════════════════════════════════════════
+   13. PAGE LOAD PROGRESS BAR
+════════════════════════════════════════════════ */
+(function initLoadBar() {
+  const bar = document.createElement('div');
+  bar.style.cssText = `
+    position:fixed; top:0; left:0; height:2px; width:0%;
+    background:linear-gradient(90deg,#00e5ff,#b24bff);
+    z-index:99999; box-shadow:0 0 10px #00e5ff;
+    transition:width 0.4s ease;
+  `;
+  document.body.prepend(bar);
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 18;
+    if (progress >= 90) { clearInterval(interval); progress = 90; }
+    bar.style.width = progress + '%';
+  }, 150);
+
+  window.addEventListener('load', () => {
+    clearInterval(interval);
+    bar.style.width = '100%';
+    setTimeout(() => bar.style.opacity = '0', 400);
+    setTimeout(() => bar.remove(), 800);
+  });
+})();
+  </script>
+</body>
+</html>
